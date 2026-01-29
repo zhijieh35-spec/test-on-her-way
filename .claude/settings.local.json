@@ -16,7 +16,9 @@
       "Bash(npx openspec archive add-insight-ai-summary:*)",
       "Bash(npx openspec:*)",
       "Bash(git rm:*)",
-      "Bash(git add:*)"
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push:*)"
     ]
   }
 }

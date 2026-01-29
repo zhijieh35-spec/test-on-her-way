@@ -504,22 +504,24 @@ const App: React.FC = () => {
   }
 
   if (viewMode === ViewMode.LANDING) {
-    return (
-      <>
-        <LandingView
-          onStart={() => setViewMode(ViewMode.MY_MAP)}
-          onStartOnboarding={handleStartOnboarding}
-          onNeedAuth={() => setViewMode(ViewMode.REGISTRATION)}
-          userId={currentUser?.id}
-          isLoggedIn={!!currentUser}
+    // If showing onboarding profile popup, only render the popup (not LandingView underneath)
+    if (showOnboardingProfilePopup && onboardingProfile) {
+      return (
+        <OnboardingProfilePopup
+          profile={onboardingProfile}
+          onContinue={handleOnboardingProfileContinue}
         />
-        {showOnboardingProfilePopup && onboardingProfile && (
-          <OnboardingProfilePopup
-            profile={onboardingProfile}
-            onContinue={handleOnboardingProfileContinue}
-          />
-        )}
-      </>
+      );
+    }
+
+    return (
+      <LandingView
+        onStart={() => setViewMode(ViewMode.MY_MAP)}
+        onStartOnboarding={handleStartOnboarding}
+        onNeedAuth={() => setViewMode(ViewMode.REGISTRATION)}
+        userId={currentUser?.id}
+        isLoggedIn={!!currentUser}
+      />
     );
   }
 
