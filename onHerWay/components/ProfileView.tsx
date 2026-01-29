@@ -9,15 +9,8 @@ interface ProfileViewProps {
 export const ProfileView: React.FC<ProfileViewProps> = ({ profile, completedActions }) => {
   const sortedActions = [...completedActions].sort((a, b) => b.createdAt - a.createdAt);
 
-  const identityAttributes = [
-    { label: '身份', value: profile.title },
-    { label: '坐标', value: profile.location || '未知' },
-    { label: '能量', value: profile.tags.length > 0 ? profile.tags.slice(0, 3).join(', ') : '分析中...' },
-    { label: '状态', value: profile.currentState || '扫描中...' },
-  ];
-
   return (
-    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-full pb-28">
+    <div className="p-4 md:p-8 max-w-7xl mx-auto min-h-full pb-28 overflow-y-auto">
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 relative">
         <div className="lg:col-span-4 xl:col-span-3">
           <div className="sticky top-6 space-y-6">
@@ -49,13 +42,14 @@ export const ProfileView: React.FC<ProfileViewProps> = ({ profile, completedActi
             </div>
 
             <div className="grid grid-cols-1 gap-2">
-              {identityAttributes.map((attr, i) => (
+              {/* IDENTITY - Profile Tags */}
+              <div className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold mb-2">IDENTITY</div>
+              {profile.tags.slice(0, 4).map((tag, i) => (
                 <div
                   key={i}
                   className="flex flex-col p-3 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
                 >
-                  <div className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold mb-1">{attr.label}</div>
-                  <div className="text-xs font-medium text-white truncate">{attr.value}</div>
+                  <div className="text-xs font-medium text-white truncate">{tag}</div>
                 </div>
               ))}
             </div>

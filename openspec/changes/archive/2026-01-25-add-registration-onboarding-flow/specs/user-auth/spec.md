@@ -1,8 +1,5 @@
-# user-auth Specification
+## MODIFIED Requirements
 
-## Purpose
-TBD - created by archiving change add-user-registration. Update Purpose after archive.
-## Requirements
 ### Requirement: User Registration
 The system SHALL provide a registration page that collects user information, optionally calls a backend API, and creates a new user account.
 
@@ -38,21 +35,7 @@ The system SHALL provide a registration page that collects user information, opt
 - **THEN** the form validation prevents submission
 - **AND** appropriate error messages are displayed
 
-### Requirement: User ID Generation
-The system SHALL automatically generate a unique user ID for each registered user.
-
-#### Scenario: User registers
-- **WHEN** a new user completes registration
-- **THEN** a unique user ID is generated and assigned to the user
-- **AND** the user ID is stored with the user's account information
-
-### Requirement: Fixed User Avatar
-The system SHALL display a fixed/placeholder avatar for all users during registration.
-
-#### Scenario: User views registration page
-- **WHEN** the registration page is displayed
-- **THEN** a fixed avatar image is shown
-- **AND** the avatar does not change based on user input
+## ADDED Requirements
 
 ### Requirement: Registration API Interface
 The RegistrationView component SHALL accept an optional API callback prop for backend integration.
@@ -63,4 +46,3 @@ The RegistrationView component SHALL accept an optional API callback prop for ba
 - **AND** the prop type is `(data: RegisterRequest) => Promise<RegisterResponse>`
 - **AND** RegisterRequest includes: nickname, account, password
 - **AND** RegisterResponse includes: success, userId, message (optional)
-

@@ -1,12 +1,17 @@
 
 import React, { useEffect, useRef, useState } from 'react';
 import { sendMessageToMentor } from '../services/geminiService';
+import { PublicProfile, ChatRequest, ChatResponse } from '../../types';
 
 interface VoiceCallModalProps {
   onClose: (result: {
     transcriptionHistory: string[];
     reason: 'declined' | 'ended' | 'error';
+    profile?: PublicProfile;
   }) => void;
+  mode?: 'normal' | 'onboarding';
+  userId?: string;
+  chatApi?: (req: ChatRequest) => Promise<ChatResponse>;
 }
 
 // Type definition for Web Speech API
@@ -17,7 +22,8 @@ declare global {
   }
 }
 
-export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose }) => {
+export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 'normal', userId, chatApi }) => {
+  const isOnboarding = mode === 'onboarding';
   const [status, setStatus] = useState<'idle' | 'connecting' | 'listening' | 'speaking' | 'processing' | 'error'>('idle');
   const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const [textInput, setTextInput] = useState('');
@@ -320,7 +326,9 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose }) => {
       }
 
       setStatus('listening');
-      const intro = "你好！我可以帮你什么？";
+      const intro = isOnboarding
+        ? "你好呀！我是 On Her Way 的 AI 向导。很高兴认识你！能告诉我一些关于你自己的事情吗？比如你现在在做什么工作，或者你有什么困惑想聊聊？"
+        : "你好！我可以帮你什么？";
       setCurrentMentorText(intro);
       transcriptionRef.current.push(`Mentor: ${intro}`);
       conversationHistoryRef.current.push(`Mentor: ${intro}`);
@@ -359,12 +367,25 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose }) => {
     setStatus('processing');
 
     try {
-      // Call AI
-      const response = await sendMessageToMentor(message, conversationHistoryRef.current, false);
+      let mentorText: string;
+
+      // Use chatApi if provided, otherwise use default sendMessageToMentor
+      if (chatApi && userId) {
+        const chatMessages = conversationHistoryRef.current.map(line => {
+          const isUser = line.startsWith('User:');
+          const content = line.replace(/^(User:|Mentor:)\s*/, '');
+          return { role: (isUser ? 'user' : 'assistant') as 'user' | 'assistant', content };
+        });
+        const response = await chatApi({ userId, messages: chatMessages });
+        mentorText = response.content;
+      } else {
+        // Call AI using default service
+        const response = await sendMessageToMentor(message, conversationHistoryRef.current, false);
+        mentorText = response.empatheticResponse;
+      }
 
       if (!mountedRef.current) return;
 
-      const mentorText = response.empatheticResponse;
       transcriptionRef.current.push(`Mentor: ${mentorText}`);
       conversationHistoryRef.current.push(`Mentor: ${mentorText}`);
       setCurrentMentorText(mentorText);
@@ -563,11 +584,14 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose }) => {
             {status === 'idle' || status === 'error' ? (
               <>
                 <h2 className="text-3xl font-sans font-bold text-white mb-4 tracking-tight drop-shadow-md">
-                   hii 想和你认识一下！
+                   {isOnboarding ? 'hi！欢迎来到 on her way!' : 'hii 想和你认识一下！'}
                 </h2>
                 <p className="text-brand-blue/70 text-sm leading-relaxed font-light">
-                   选择语音通话或文字聊天<br/>
-                   来和你的 AI 导师聊聊吧
+                   {isOnboarding ? (
+                     <>我们先随便聊几句，互相认识一下彼此？</>
+                   ) : (
+                     <>选择语音通话或文字聊天<br/>来和你的 AI 导师聊聊吧</>
+                   )}
                 </p>
                 {status === 'error' && (
                   <div className="mt-4 text-red-300 text-xs bg-red-500/10 px-3 py-2 rounded-lg border border-red-500/20">

@@ -27,6 +27,7 @@ export interface PuzzleData {
 export enum ViewMode {
   REGISTRATION = 'REGISTRATION',
   LANDING = 'LANDING',
+  ONBOARDING = 'ONBOARDING',
   MY_MAP = 'MY_MAP',
   COMMUNITY = 'COMMUNITY',
   INSIGHT_SUMMARY = 'INSIGHT_SUMMARY',
@@ -47,4 +48,60 @@ export interface User {
   account: string;
   password: string;
   avatar: string;
+}
+
+// Onboarding types (compatible with my-app backend)
+export interface LifeExperience {
+  id: string;
+  title: string;
+  description: string;
+  year: string;
+}
+
+export interface PublicProfile {
+  id: string;
+  name: string;
+  avatar: string;
+  tags: {
+    role_detail: string;
+    location: string;
+    experience: string;
+    hassle: string;
+    goal: string;
+  };
+  lifeTimeline: LifeExperience[];
+}
+
+// API interfaces (for future backend integration)
+export interface RegisterRequest {
+  nickname: string;
+  account: string;
+  password: string;
+}
+
+export interface RegisterResponse {
+  success: boolean;
+  userId?: string;
+  error?: string;
+}
+
+export interface ChatRequest {
+  userId: string;
+  messages: { role: 'user' | 'assistant'; content: string }[];
+}
+
+export interface ChatResponse {
+  content: string;
+  profile?: PublicProfile;
+}
+
+export interface LoginRequest {
+  account: string;
+  password: string;
+}
+
+export interface LoginResponse {
+  success: boolean;
+  user?: User;
+  error?: string;
 }

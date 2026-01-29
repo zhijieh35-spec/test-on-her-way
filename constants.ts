@@ -1,5 +1,5 @@
 
-import { PuzzleType, PuzzleData } from './types';
+import { PuzzleType, PuzzleData, PublicProfile } from './types';
 
 export const COLORS = {
   [PuzzleType.EXPERIENCE]: '#9FD2E3', // Blue - Experience
@@ -218,3 +218,22 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     author: { name: 'Writer', avatar: 'https://i.pravatar.cc/150?u=g7' }
   }
 ];
+
+// Mock profile for onboarding flow (development/demo purposes)
+export const MOCK_ONBOARDING_PROFILE: PublicProfile = {
+  id: 'mock_user_1',
+  name: '探索者',
+  avatar: 'https://i.pravatar.cc/150?u=onboarding',
+  tags: {
+    role_detail: '互联网产品经理，3年经验',
+    location: '上海',
+    experience: '从0到1搭建过用户增长体系',
+    hassle: '职业发展方向迷茫，不确定下一步',
+    goal: '找到真正热爱的事业方向',
+  },
+  lifeTimeline: [
+    { id: 't1', year: '2020', title: '初次探索', description: '第一份互联网工作，开始了解产品思维' },
+    { id: 't2', year: '2022', title: '职业转型', description: '从运营转向产品，开始新的挑战' },
+    { id: 't3', year: '2024', title: '觉醒时刻', description: '意识到需要找到真正的人生方向' },
+  ],
+};

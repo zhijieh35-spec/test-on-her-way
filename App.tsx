@@ -1,7 +1,7 @@
 
 import React, { useState } from 'react';
-import { ViewMode, PuzzleType, PuzzleData, MyMapSubView, User } from './types';
-import { INITIAL_PUZZLES } from './constants';
+import { ViewMode, PuzzleType, PuzzleData, MyMapSubView, User, PublicProfile } from './types';
+import { INITIAL_PUZZLES, MOCK_ONBOARDING_PROFILE } from './constants';
 import { Sidebar, UserProfileData } from './components/Sidebar';
 import { MapCanvas } from './components/MapCanvas';
 import { CommunityView } from './components/CommunityView';
@@ -10,10 +10,11 @@ import { TopNav } from './components/TopNav';
 import { PuzzleEditorModal } from './components/PuzzleEditorModal';
 import { VerticalRightMenu } from './components/VerticalRightMenu';
 import { LandingView } from './onHerWay/components/LandingView';
-import { RegistrationView } from './components/RegistrationView';
+import { AuthView } from './components/AuthView';
 import { Layout as OhwLayout } from './onHerWay/components/Layout';
 import { VoiceCallModal } from './onHerWay/components/VoiceCallModal';
 import { PersonaModal } from './onHerWay/components/PersonaModal';
+import { OnboardingProfilePopup } from './onHerWay/components/OnboardingProfilePopup';
 import { InsightFlow } from './onHerWay/components/InsightFlow';
 import { ChatView as MentorChatView } from './onHerWay/components/ChatView';
 import { PlanView as OhwPlanView } from './onHerWay/components/PlanView';
@@ -110,12 +111,13 @@ const App: React.FC = () => {
 
   const storedUser = getStoredUser();
   const [currentUser, setCurrentUser] = useState<User | null>(storedUser);
-  const [viewMode, setViewMode] = useState<ViewMode>(
-    storedUser ? ViewMode.LANDING : ViewMode.REGISTRATION
-  );
+  const [viewMode, setViewMode] = useState<ViewMode>(ViewMode.LANDING); // Always start with LANDING
   const [myMapSubView, setMyMapSubView] = useState<MyMapSubView>('map');
   const [isCallActive, setIsCallActive] = useState(false);
   const [callReturnViewMode, setCallReturnViewMode] = useState<ViewMode>(ViewMode.MY_MAP);
+  const [isOnboardingCall, setIsOnboardingCall] = useState(false);
+  const [showOnboardingProfilePopup, setShowOnboardingProfilePopup] = useState(false);
+  const [onboardingProfile, setOnboardingProfile] = useState<PublicProfile | null>(null);
   const [visitingUser, setVisitingUser] = useState<UserProfileData | undefined>(undefined);
   // Track the previous view to return to correct screen after visiting a profile
   const [returnViewMode, setReturnViewMode] = useState<ViewMode>(ViewMode.INSIGHT_SUMMARY);
@@ -442,17 +444,97 @@ const App: React.FC = () => {
       setVisitingUser(undefined);
   };
 
-  const handleRegister = (user: User) => {
+  const handleAuth = (user: User, hasProfile: boolean) => {
     setCurrentUser(user);
+    if (hasProfile) {
+      // Returning user with profile: go directly to MY_MAP
+      setViewMode(ViewMode.MY_MAP);
+    } else {
+      // New user or user without profile: go back to LANDING, which will trigger onboarding
+      setViewMode(ViewMode.LANDING);
+    }
+  };
+
+  const handleLogout = () => {
+    // Clear session data only, keep profile for when user logs back in
+    localStorage.removeItem('currentUser');
+    localStorage.removeItem('userId');
+    // Note: we keep publicProfile_${userId} so user doesn't have to redo onboarding
+
+    // Reset state
+    setCurrentUser(null);
+    setOnboardingProfile(null);
+    setShowOnboardingProfilePopup(false);
+    setIsOnboardingCall(false);
+
+    // Go to registration/login view
+    setViewMode(ViewMode.REGISTRATION);
+  };
+
+  const handleStartOnboarding = () => {
+    setIsOnboardingCall(true);
+    setViewMode(ViewMode.ONBOARDING);
+  };
+
+  const handleOnboardingCallEnd = (result: {
+    transcriptionHistory: string[];
+    reason: 'declined' | 'ended' | 'error';
+    profile?: PublicProfile;
+  }) => {
     setViewMode(ViewMode.LANDING);
+
+    // Use profile from result if provided, otherwise use mock data
+    const profile = result.profile || MOCK_ONBOARDING_PROFILE;
+    setOnboardingProfile(profile);
+    setShowOnboardingProfilePopup(true);
+  };
+
+  const handleOnboardingProfileContinue = () => {
+    // Save profile to localStorage with user-specific key
+    if (onboardingProfile && currentUser) {
+      localStorage.setItem(`publicProfile_${currentUser.id}`, JSON.stringify(onboardingProfile));
+    }
+    setShowOnboardingProfilePopup(false);
+    setIsOnboardingCall(false);
+    setViewMode(ViewMode.MY_MAP);
   };
 
   if (viewMode === ViewMode.REGISTRATION) {
-    return <RegistrationView onRegister={handleRegister} />;
+    return <AuthView onAuth={handleAuth} />;
   }
 
   if (viewMode === ViewMode.LANDING) {
-    return <LandingView onStart={() => setViewMode(ViewMode.MY_MAP)} />;
+    // If showing onboarding profile popup, only render the popup (not LandingView underneath)
+    if (showOnboardingProfilePopup && onboardingProfile) {
+      return (
+        <OnboardingProfilePopup
+          profile={onboardingProfile}
+          onContinue={handleOnboardingProfileContinue}
+        />
+      );
+    }
+
+    return (
+      <LandingView
+        onStart={() => setViewMode(ViewMode.MY_MAP)}
+        onStartOnboarding={handleStartOnboarding}
+        onNeedAuth={() => setViewMode(ViewMode.REGISTRATION)}
+        userId={currentUser?.id}
+        isLoggedIn={!!currentUser}
+      />
+    );
+  }
+
+  if (viewMode === ViewMode.ONBOARDING) {
+    return (
+      <div className="fixed inset-0 z-[90]">
+        <VoiceCallModal
+          mode="onboarding"
+          userId={currentUser?.id}
+          onClose={handleOnboardingCallEnd}
+        />
+      </div>
+    );
   }
 
   return (
@@ -467,6 +549,7 @@ const App: React.FC = () => {
           setViewMode(nextViewMode);
           if (nextViewMode === ViewMode.INSIGHT_SUMMARY) setOhwActiveView('insight');
         }}
+        onLogout={handleLogout}
       />
 
       {/* Right Side Menu (MY WAY only) */}

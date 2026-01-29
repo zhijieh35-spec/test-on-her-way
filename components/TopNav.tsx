@@ -5,9 +5,10 @@ import { ViewMode } from '../types';
 interface TopNavProps {
   currentView: ViewMode;
   onSwitch: (view: ViewMode) => void;
+  onLogout?: () => void;
 }
 
-export const TopNav: React.FC<TopNavProps> = ({ currentView, onSwitch }) => {
+export const TopNav: React.FC<TopNavProps> = ({ currentView, onSwitch, onLogout }) => {
   return (
     <div className="fixed top-0 left-0 w-full p-6 flex justify-between items-start z-50 pointer-events-none">
       {/* Title - Hidden to make space for navigation */}
@@ -42,6 +43,19 @@ export const TopNav: React.FC<TopNavProps> = ({ currentView, onSwitch }) => {
             <svg className="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" /></svg>
             Her Way 社区
           </button>
+
+          {/* Logout Button */}
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="flex items-center px-4 py-2 rounded-full text-sm font-medium transition-all duration-300 text-gray-400 hover:text-red-400 ml-2"
+              title="退出登录"
+            >
+              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+              </svg>
+            </button>
+          )}
         </div>
 
       </div>
