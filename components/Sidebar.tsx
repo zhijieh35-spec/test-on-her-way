@@ -1,5 +1,6 @@
 
 import React from 'react';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 
 export interface UserProfileData {
   name: string;
@@ -20,7 +21,7 @@ interface SidebarProps {
 
 const DEFAULT_USER: UserProfileData = {
   name: "一个世界玩家",
-  avatar: "https://picsum.photos/200",
+  avatar: getAvatarForUser('default_user'),
   tagline: "PERSONAL LOG",
   identity: "THINKER",
   role: "建筑设计师",

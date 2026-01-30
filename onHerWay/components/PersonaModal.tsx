@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserProfile } from '../types';
+import { getAvatarForUser } from '../utils/avatars';
 
 interface PersonaModalProps {
   profile: Partial<UserProfile>;
@@ -28,7 +29,7 @@ export const PersonaModal: React.FC<PersonaModalProps> = ({ profile, onContinue 
               <div className="flex-shrink-0 relative group">
                 <div className="w-32 h-32 md:w-40 md:h-40 rounded-full border-2 border-white/20 overflow-hidden shadow-[0_0_30px_rgba(255,255,255,0.1)]">
                   <img
-                    src={profile.avatar || 'https://picsum.photos/200'}
+                    src={profile.avatar || getAvatarForUser('persona_fallback')}
                     alt="AI Avatar"
                     className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
                   />

@@ -61,7 +61,8 @@ export interface LifeExperience {
 export interface PublicProfile {
   id: string;
   name: string;
-  avatar: string;
+  avatar: string;           // Avatar image path (from avatar library)
+  avatarPrompt?: string;    // User's one-sentence self-description (for future avatar generation)
   tags: {
     role_detail: string;
     location: string;

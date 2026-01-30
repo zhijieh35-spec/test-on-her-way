@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { ViewMode, PuzzleType, PuzzleData, MyMapSubView, User, PublicProfile } from './types';
 import { INITIAL_PUZZLES, MOCK_ONBOARDING_PROFILE } from './constants';
+import { getAvatarForUser } from './onHerWay/utils/avatars';
 import { Sidebar, UserProfileData } from './components/Sidebar';
 import { MapCanvas } from './components/MapCanvas';
 import { CommunityView } from './components/CommunityView';
@@ -23,6 +24,7 @@ import { CommunityView as OhwCommunityView } from './onHerWay/components/Communi
 import { NetworkView as OhwNetworkView } from './onHerWay/components/NetworkView';
 import { ProfileView as OhwProfileView } from './onHerWay/components/ProfileView';
 import { analyzeConversation, generateAvatar, generateUserProfile, sendMessageToMentor } from './onHerWay/services/geminiService';
+import { onboardingChatApi, resetConversationState } from './onHerWay/services/chatApiService';
 import type {
   ActionItem as OhwActionItem,
   AnalysisResult as OhwAnalysisResult,
@@ -35,7 +37,7 @@ import type {
 // Mock Data for "Their" Map
 const MOCK_THEIR_USER: UserProfileData = {
   name: "CC同学",
-  avatar: "https://i.pravatar.cc/150?u=cc_creator",
+  avatar: getAvatarForUser('cc_creator'),
   tagline: "CONTENT CREATOR",
   identity: "MAKER",
   role: "自媒体人",
@@ -50,51 +52,51 @@ const MOCK_THEIR_PUZZLES: PuzzleData[] = [
     {
         id: 'tp1', date: '2023.01.15', title: '第一条爆款', description: '虽然只是吐槽老板，但居然有10w+播放，看来大家都想辞职。',
         type: PuzzleType.EXPERIENCE, shapeVariant: 1, rotation: 10, x: -100, y: -100,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
     {
         id: 'tp2', date: '2023.03.20', title: '恰饭啦', description: '收到了第一笔广告费，虽然只有500块，但比工资香多了。',
         type: PuzzleType.EXPERIENCE, shapeVariant: 3, rotation: -5, x: 50, y: -50,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
     {
         id: 'tp3', date: '2023.08.10', title: '粉丝面基', description: '发现关注我的人都好可爱，我们都在努力对抗平庸。',
         type: PuzzleType.EXPERIENCE, shapeVariant: 2, rotation: 8, x: 200, y: -120,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
-    
+
     // Difficulty
     {
         id: 'tp4', date: '2023.06.20', title: '数据焦虑', description: '一旦流量下滑就怀疑人生，我是不是过气了？是不是江郎才尽了？',
         type: PuzzleType.DIFFICULTY, shapeVariant: 2, rotation: -5, x: 150, y: 50,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
     {
         id: 'tp5', date: '2023.09.05', title: '恶评攻击', description: '第一次被骂上热评，在被窝里哭了一晚，第二天把他们都拉黑了。',
         type: PuzzleType.DIFFICULTY, shapeVariant: 4, rotation: 12, x: -150, y: 150,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
     {
         id: 'tp6', date: '2024.01.01', title: '灵感枯竭', description: '坐在电脑前发呆了8个小时，一个字也写不出来，想把键盘吃了。',
         type: PuzzleType.DIFFICULTY, shapeVariant: 1, rotation: -8, x: 250, y: 200,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
 
     // Goal
     {
         id: 'tp7', date: '2023.11.11', title: '百万粉丝', description: '虽然现在只有10万，但梦想要有的，万一见鬼了呢？',
         type: PuzzleType.GOAL, shapeVariant: 3, rotation: 5, x: -50, y: 250,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
     {
         id: 'tp8', date: '2024.02.01', title: '个人工作室', description: '不想在家办公了，想要一个有一整面落地窗的办公室。',
         type: PuzzleType.GOAL, shapeVariant: 4, rotation: -2, x: 300, y: 0,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
      {
         id: 'tp9', date: '2024.05.01', title: '早睡早起', description: '这可能是最难实现的宏伟目标了，熬夜是创作的宿命吗？',
         type: PuzzleType.GOAL, shapeVariant: 1, rotation: 15, x: 100, y: 320,
-        author: { name: 'CC同学', avatar: '' }
+        author: { name: 'CC同学', avatar: getAvatarForUser('cc_creator') }
     },
 ];
 
@@ -118,6 +120,7 @@ const App: React.FC = () => {
   const [isOnboardingCall, setIsOnboardingCall] = useState(false);
   const [showOnboardingProfilePopup, setShowOnboardingProfilePopup] = useState(false);
   const [onboardingProfile, setOnboardingProfile] = useState<PublicProfile | null>(null);
+  const [isProfileFromAI, setIsProfileFromAI] = useState(true);
   const [visitingUser, setVisitingUser] = useState<UserProfileData | undefined>(undefined);
   // Track the previous view to return to correct screen after visiting a profile
   const [returnViewMode, setReturnViewMode] = useState<ViewMode>(ViewMode.INSIGHT_SUMMARY);
@@ -127,7 +130,7 @@ const App: React.FC = () => {
   const [ohwPosts, setOhwPosts] = useState<OhwPost[]>([
     {
       id: 'p1',
-      userAvatar: 'https://picsum.photos/100/100?random=1',
+      userAvatar: getAvatarForUser('sarah_chen'),
       userName: 'Sarah Chen',
       userTitle: '转型 UX 设计中',
       content:
@@ -177,9 +180,9 @@ const App: React.FC = () => {
   ]);
 
   const ohwProfile: OhwUserProfile = {
-    name: persona?.name || 'Explorer',
+    name: persona?.name || 'momo',
     title: persona?.title || '新探索者',
-    avatar: persona?.avatar || 'https://picsum.photos/200',
+    avatar: persona?.avatar || getAvatarForUser(currentUser?.id || 'default'),
     tags: ohwTags,
     xp: ohwActions.filter((a) => a.status === 'completed').length * 10,
     location: persona?.location,
@@ -414,7 +417,7 @@ const App: React.FC = () => {
       y,
       author: {
         name: persona?.name || 'Me',
-        avatar: persona?.avatar || 'https://picsum.photos/200',
+        avatar: persona?.avatar || getAvatarForUser(currentUser?.id || 'default'),
       },
     };
 
@@ -472,6 +475,10 @@ const App: React.FC = () => {
   };
 
   const handleStartOnboarding = () => {
+    // Reset conversation state for fresh onboarding
+    if (currentUser?.id) {
+      resetConversationState(currentUser.id);
+    }
     setIsOnboardingCall(true);
     setViewMode(ViewMode.ONBOARDING);
   };
@@ -483,10 +490,26 @@ const App: React.FC = () => {
   }) => {
     setViewMode(ViewMode.LANDING);
 
+    // Debug: log the result to see if profile is extracted
+    console.log('[Onboarding] Call ended with result:', {
+      reason: result.reason,
+      hasProfile: !!result.profile,
+      profile: result.profile,
+      transcriptionCount: result.transcriptionHistory.length
+    });
+
     // Use profile from result if provided, otherwise use mock data
+    const hasAIProfile = !!result.profile;
     const profile = result.profile || MOCK_ONBOARDING_PROFILE;
     setOnboardingProfile(profile);
+    setIsProfileFromAI(hasAIProfile);
     setShowOnboardingProfilePopup(true);
+  };
+
+  const handleRetryOnboarding = () => {
+    setShowOnboardingProfilePopup(false);
+    setOnboardingProfile(null);
+    handleStartOnboarding();
   };
 
   const handleOnboardingProfileContinue = () => {
@@ -510,6 +533,8 @@ const App: React.FC = () => {
         <OnboardingProfilePopup
           profile={onboardingProfile}
           onContinue={handleOnboardingProfileContinue}
+          isFromAI={isProfileFromAI}
+          onRetry={handleRetryOnboarding}
         />
       );
     }
@@ -531,6 +556,7 @@ const App: React.FC = () => {
         <VoiceCallModal
           mode="onboarding"
           userId={currentUser?.id}
+          chatApi={onboardingChatApi}
           onClose={handleOnboardingCallEnd}
         />
       </div>

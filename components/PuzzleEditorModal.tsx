@@ -2,6 +2,7 @@
 import React, { useState } from 'react';
 import { PuzzleData, PuzzleType } from '../types';
 import { PuzzlePiece } from './PuzzlePiece';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 
 interface PuzzleEditorModalProps {
   initialType: PuzzleType;
@@ -45,7 +46,7 @@ export const PuzzleEditorModal: React.FC<PuzzleEditorModalProps> = ({
       type: initialType,
       shapeVariant: 1,
       rotation: 0,
-      author: { name: 'Me', avatar: 'https://picsum.photos/200' } // Placeholder for current user
+      author: { name: 'Me', avatar: getAvatarForUser('current_user') } // Placeholder for current user
   };
 
   return (

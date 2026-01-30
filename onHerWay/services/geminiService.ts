@@ -1,5 +1,6 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { AIMentorResponse, AnalysisResult, ActionItem, Insight, UserProfile, ChatInsightSummary } from '../types';
+import { getAvatarForUser } from '../utils/avatars';
 
 const ai = new GoogleGenAI({
   apiKey: process.env.API_KEY,
@@ -333,10 +334,10 @@ export const generateAvatar = async (profile: Partial<UserProfile>): Promise<str
         return `data:image/png;base64,${part.inlineData.data}`;
       }
     }
-    return 'https://picsum.photos/200';
+    return getAvatarForUser('generated_avatar');
   } catch (e) {
     console.error('Avatar Gen Error', e);
-    return 'https://picsum.photos/200';
+    return getAvatarForUser('fallback_avatar');
   }
 };
 
