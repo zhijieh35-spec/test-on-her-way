@@ -1,5 +1,6 @@
 
 import { PuzzleType, PuzzleData, PublicProfile } from './types';
+import { getAvatarForUser } from './onHerWay/utils/avatars';
 
 export const COLORS = {
   [PuzzleType.EXPERIENCE]: '#9FD2E3', // Blue - Experience
@@ -31,7 +32,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 1,
     rotation: -12,
     x: -380, y: -350,
-    author: { name: 'Sarah', avatar: 'https://i.pravatar.cc/150?u=e1' }
+    author: { name: 'Sarah', avatar: getAvatarForUser('e1') }
   },
   {
     id: 'g6',
@@ -42,7 +43,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 2,
     rotation: -5,
     x: -200, y: -480, 
-    author: { name: 'Bard', avatar: 'https://i.pravatar.cc/150?u=g6' }
+    author: { name: 'Bard', avatar: getAvatarForUser('g6') }
   },
   {
     id: 'd1',
@@ -53,7 +54,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 4,
     rotation: 8,
     x: -550, y: -150, 
-    author: { name: 'Olivia', avatar: 'https://i.pravatar.cc/150?u=d3' }
+    author: { name: 'Olivia', avatar: getAvatarForUser('d3') }
   },
 
   // --- TOP RIGHT REGION (Mixed) ---
@@ -66,7 +67,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 2,
     rotation: 15,
     x: 450, y: -300,
-    author: { name: 'Anna', avatar: 'https://i.pravatar.cc/150?u=d1' }
+    author: { name: 'Anna', avatar: getAvatarForUser('d1') }
   },
   {
     id: 'e4',
@@ -77,7 +78,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 3,
     rotation: -8,
     x: 250, y: -150,
-    author: { name: 'Jessica', avatar: 'https://i.pravatar.cc/150?u=e3' }
+    author: { name: 'Jessica', avatar: getAvatarForUser('e3') }
   },
   {
     id: 'g1',
@@ -88,7 +89,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 3,
     rotation: 6,
     x: 650, y: -80,
-    author: { name: 'Ryan', avatar: 'https://i.pravatar.cc/150?u=g1' }
+    author: { name: 'Ryan', avatar: getAvatarForUser('g1') }
   },
 
   // --- CENTER REGION (Mixed "Hotspot") ---
@@ -101,7 +102,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 3,
     rotation: -4,
     x: -50, y: -80,
-    author: { name: 'Echo', avatar: 'https://i.pravatar.cc/150?u=d6' }
+    author: { name: 'Echo', avatar: getAvatarForUser('d6') }
   },
   {
     id: 'd5',
@@ -112,7 +113,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 1,
     rotation: 5,
     x: 180, y: -350,
-    author: { name: 'Lucas', avatar: 'https://i.pravatar.cc/150?u=d4' }
+    author: { name: 'Lucas', avatar: getAvatarForUser('d4') }
   },
   {
     id: 'e5',
@@ -123,7 +124,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 2,
     rotation: 10,
     x: 220, y: 150,
-    author: { name: 'Leo', avatar: 'https://i.pravatar.cc/150?u=e6' }
+    author: { name: 'Leo', avatar: getAvatarForUser('e6') }
   },
 
   // --- BOTTOM LEFT REGION (Mixed) ---
@@ -136,7 +137,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 2,
     rotation: -3,
     x: -300, y: 180,
-    author: { name: 'Mike', avatar: 'https://i.pravatar.cc/150?u=e2' }
+    author: { name: 'Mike', avatar: getAvatarForUser('e2') }
   },
   {
     id: 'e3',
@@ -147,7 +148,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 4,
     rotation: 12,
     x: -500, y: 350,
-    author: { name: 'David', avatar: 'https://i.pravatar.cc/150?u=e4' }
+    author: { name: 'David', avatar: getAvatarForUser('e4') }
   },
   {
     id: 'g3',
@@ -158,7 +159,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 1,
     rotation: -6,
     x: -180, y: 450,
-    author: { name: 'Daniel', avatar: 'https://i.pravatar.cc/150?u=g3' }
+    author: { name: 'Daniel', avatar: getAvatarForUser('g3') }
   },
   
   // --- BOTTOM RIGHT REGION (Mixed) ---
@@ -171,7 +172,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 1,
     rotation: -10,
     x: 420, y: 100,
-    author: { name: 'Job', avatar: 'https://i.pravatar.cc/150?u=d7' }
+    author: { name: 'Job', avatar: getAvatarForUser('d7') }
   },
   {
     id: 'g5',
@@ -182,7 +183,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 1,
     rotation: -9,
     x: 350, y: 400,
-    author: { name: 'Jacob', avatar: 'https://i.pravatar.cc/150?u=g5' }
+    author: { name: 'Jacob', avatar: getAvatarForUser('g5') }
   },
   {
     id: 'g4',
@@ -193,7 +194,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 2,
     rotation: 4,
     x: 580, y: 550,
-    author: { name: 'Emma', avatar: 'https://i.pravatar.cc/150?u=g4' }
+    author: { name: 'Emma', avatar: getAvatarForUser('g4') }
   },
   {
     id: 'g2',
@@ -204,7 +205,7 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 4,
     rotation: -7,
     x: 100, y: 600,
-    author: { name: 'Chloe', avatar: 'https://i.pravatar.cc/150?u=g2' }
+    author: { name: 'Chloe', avatar: getAvatarForUser('g2') }
   },
    {
     id: 'g7',
@@ -215,25 +216,24 @@ export const INITIAL_PUZZLES: PuzzleData[] = [
     shapeVariant: 3,
     rotation: 3,
     x: -50, y: 750, // Far bottom
-    author: { name: 'Writer', avatar: 'https://i.pravatar.cc/150?u=g7' }
+    author: { name: 'Writer', avatar: getAvatarForUser('g7') }
   }
 ];
 
-// Mock profile for onboarding flow (development/demo purposes)
+// Mock profile for onboarding flow (fallback when AI extraction fails)
 export const MOCK_ONBOARDING_PROFILE: PublicProfile = {
   id: 'mock_user_1',
-  name: '探索者',
-  avatar: 'https://i.pravatar.cc/150?u=onboarding',
+  name: '你的昵称',
+  avatar: getAvatarForUser('mock_user_1'),
+  avatarPrompt: '用一句话描述当下的自己',
   tags: {
-    role_detail: '互联网产品经理，3年经验',
-    location: '上海',
-    experience: '从0到1搭建过用户增长体系',
-    hassle: '职业发展方向迷茫，不确定下一步',
-    goal: '找到真正热爱的事业方向',
+    role_detail: '你的职业/角色',
+    location: '所在地',
+    experience: '你的独特经历',
+    hassle: '近期的关注点或小烦恼',
+    goal: '近期目标',
   },
   lifeTimeline: [
-    { id: 't1', year: '2020', title: '初次探索', description: '第一份互联网工作，开始了解产品思维' },
-    { id: 't2', year: '2022', title: '职业转型', description: '从运营转向产品，开始新的挑战' },
-    { id: 't3', year: '2024', title: '觉醒时刻', description: '意识到需要找到真正的人生方向' },
+    { id: 't1', year: '时间', title: '在这里记录你的人生节点', description: '加一些简单的描述' },
   ],
 };

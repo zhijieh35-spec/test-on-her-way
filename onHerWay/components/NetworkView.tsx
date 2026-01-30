@@ -1,5 +1,6 @@
 import React from 'react';
 import { UserProfile } from '../types';
+import { getAvatarForUser } from '../utils/avatars';
 
 interface NetworkViewProps {
   userProfile: UserProfile;
@@ -26,9 +27,9 @@ export const NetworkView: React.FC<NetworkViewProps> = ({ userProfile }) => {
   ];
 
   const myConnections = [
-    { id: 'c1', name: 'Anna', role: '产品经理', avatar: 'https://picsum.photos/100/100?random=20' },
-    { id: 'c2', name: 'Yuqi', role: '前端开发', avatar: 'https://picsum.photos/100/100?random=21' },
-    { id: 'c3', name: 'Clara', role: '插画师', avatar: 'https://picsum.photos/100/100?random=22' },
+    { id: 'c1', name: 'Anna', role: '产品经理', avatar: getAvatarForUser('c1') },
+    { id: 'c2', name: 'Yuqi', role: '前端开发', avatar: getAvatarForUser('c2') },
+    { id: 'c3', name: 'Clara', role: '插画师', avatar: getAvatarForUser('c3') },
   ];
 
   return (

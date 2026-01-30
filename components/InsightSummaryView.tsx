@@ -5,6 +5,7 @@ import { PuzzlePiece } from './PuzzlePiece';
 import { PuzzleInteractionModal } from './PuzzleInteractionModal';
 import { PuzzleEditorModal } from './PuzzleEditorModal';
 import { generateInsightSummaries, generateActionsFromChat } from '../onHerWay/services/geminiService';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 import type { ChatMessage as OhwChatMessage, ChatInsightSummary, ActionItem } from '../onHerWay/types';
 
 // Extended type for this view
@@ -31,7 +32,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 1,
       rotation: -5,
-      author: { name: 'Alice', avatar: 'https://i.pravatar.cc/150?u=lf1' },
+      author: { name: 'Alice', avatar: getAvatarForUser('lf1') },
       recommendationReason: '快速启动'
     },
     {
@@ -42,7 +43,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 2,
       rotation: 3,
-      author: { name: 'Diana', avatar: 'https://i.pravatar.cc/150?u=lf2' },
+      author: { name: 'Diana', avatar: getAvatarForUser('lf2') },
       recommendationReason: '简化思考'
     },
     {
@@ -53,7 +54,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 3,
       rotation: -2,
-      author: { name: 'Emma', avatar: 'https://i.pravatar.cc/150?u=lf3' },
+      author: { name: 'Emma', avatar: getAvatarForUser('lf3') },
       recommendationReason: '外部提醒'
     }
   ],
@@ -66,7 +67,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 2,
       rotation: 5,
-      author: { name: 'Bob', avatar: 'https://i.pravatar.cc/150?u=rs1' },
+      author: { name: 'Bob', avatar: getAvatarForUser('rs1') },
       recommendationReason: '学习借鉴'
     },
     {
@@ -77,7 +78,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 1,
       rotation: -3,
-      author: { name: 'Frank', avatar: 'https://i.pravatar.cc/150?u=rs2' },
+      author: { name: 'Frank', avatar: getAvatarForUser('rs2') },
       recommendationReason: '案例研究'
     },
     {
@@ -88,7 +89,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.GOAL,
       shapeVariant: 4,
       rotation: 8,
-      author: { name: 'Grace', avatar: 'https://i.pravatar.cc/150?u=rs3' },
+      author: { name: 'Grace', avatar: getAvatarForUser('rs3') },
       recommendationReason: '获取经验'
     }
   ],
@@ -101,7 +102,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.GOAL,
       shapeVariant: 3,
       rotation: 0,
-      author: { name: 'Charlie', avatar: 'https://i.pravatar.cc/150?u=ac1' },
+      author: { name: 'Charlie', avatar: getAvatarForUser('ac1') },
       recommendationReason: '社交压力'
     },
     {
@@ -112,7 +113,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.EXPERIENCE,
       shapeVariant: 1,
       rotation: -6,
-      author: { name: 'Henry', avatar: 'https://i.pravatar.cc/150?u=ac2' },
+      author: { name: 'Henry', avatar: getAvatarForUser('ac2') },
       recommendationReason: '快速原型'
     },
     {
@@ -123,7 +124,7 @@ const COMMUNITY_PUZZLES: Record<string, RecommendedPuzzle[]> = {
       type: PuzzleType.DIFFICULTY,
       shapeVariant: 2,
       rotation: 4,
-      author: { name: 'Ivy', avatar: 'https://i.pravatar.cc/150?u=ac3' },
+      author: { name: 'Ivy', avatar: getAvatarForUser('ac3') },
       recommendationReason: '互助监督'
     }
   ]

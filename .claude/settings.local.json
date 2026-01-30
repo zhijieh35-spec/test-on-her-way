@@ -18,7 +18,10 @@
       "Bash(git rm:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push:*)"
+      "Bash(git push:*)",
+      "Bash(curl:*)",
+      "Bash(npm run build)",
+      "Read(//c/Users/X1 Yoga/Desktop/HacktheWorld/**)"
     ]
   }
 }

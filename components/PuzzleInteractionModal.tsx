@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { PuzzleData, PuzzleType } from '../types';
 import { PuzzlePiece } from './PuzzlePiece';
 import { INITIAL_PUZZLES } from '../constants';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 
 interface PuzzleInteractionModalProps {
   viewingPuzzle: PuzzleData & { recommendationReason?: string };
@@ -24,7 +25,7 @@ export const PuzzleInteractionModal: React.FC<PuzzleInteractionModalProps> = ({
   const myProblemPuzzle = INITIAL_PUZZLES.find(p => p.type === PuzzleType.DIFFICULTY) || INITIAL_PUZZLES[0];
   const myPuzzleDisplayData = {
       ...myProblemPuzzle,
-      author: { name: 'Me', avatar: 'https://picsum.photos/200' },
+      author: { name: 'Me', avatar: getAvatarForUser('current_user') },
       title: '懂事崩',
       description: '委屈自己，顾全大局。'
   };

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, RegisterRequest, RegisterResponse } from '../types';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 
 interface RegistrationViewProps {
   onRegister: (user: User) => void;
@@ -14,8 +15,8 @@ export const RegistrationView: React.FC<RegistrationViewProps> = ({ onRegister, 
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Fixed avatar placeholder
-  const fixedAvatar = 'https://i.pravatar.cc/150?u=default';
+  // Fixed avatar placeholder - will be replaced with user-specific avatar after registration
+  const fixedAvatar = getAvatarForUser('default_registration');
 
   const generateUserId = (): string => {
     const timestamp = Date.now();

@@ -5,15 +5,17 @@ import { ProfileParticleBackground } from './ProfileParticleBackground';
 interface OnboardingProfilePopupProps {
   profile: PublicProfile;
   onContinue: () => void;
+  isFromAI?: boolean;
+  onRetry?: () => void;
 }
 
-export const OnboardingProfilePopup: React.FC<OnboardingProfilePopupProps> = ({ profile, onContinue }) => {
-  const [hoveredTag, setHoveredTag] = useState<string | null>(null);
+export const OnboardingProfilePopup: React.FC<OnboardingProfilePopupProps> = ({ profile, onContinue, isFromAI = true, onRetry }) => {
   const [hoveredTimelineId, setHoveredTimelineId] = useState<string | null>(null);
 
   // Editable state
   const [editingField, setEditingField] = useState<string | null>(null);
   const [editedName, setEditedName] = useState(profile.name || 'momo');
+  const [editedAvatarPrompt, setEditedAvatarPrompt] = useState(profile.avatarPrompt || 'EXPLORER');
   const [editedTags, setEditedTags] = useState<Record<string, string>>(profile.tags);
   const [editedTimeline, setEditedTimeline] = useState(profile.lifeTimeline);
 
@@ -26,11 +28,11 @@ export const OnboardingProfilePopup: React.FC<OnboardingProfilePopupProps> = ({ 
   };
 
   const tagColors: Record<string, string> = {
-    role_detail: 'bg-brand-blue/20 text-brand-blue border-brand-blue/30 hover:border-brand-blue',
-    location: 'bg-green-400/20 text-green-400 border-green-400/30 hover:border-green-400',
-    experience: 'bg-brand-yellow/20 text-brand-yellow border-brand-yellow/30 hover:border-brand-yellow',
-    hassle: 'bg-brand-orange/20 text-brand-orange border-brand-orange/30 hover:border-brand-orange',
-    goal: 'bg-nebula-pink/20 text-nebula-pink border-nebula-pink/30 hover:border-nebula-pink',
+    role_detail: 'bg-brand-blue/10 text-brand-blue border-brand-blue/20 hover:border-brand-blue/50',
+    location: 'bg-green-400/10 text-green-400 border-green-400/20 hover:border-green-400/50',
+    experience: 'bg-brand-yellow/10 text-brand-yellow border-brand-yellow/20 hover:border-brand-yellow/50',
+    hassle: 'bg-brand-orange/10 text-brand-orange border-brand-orange/20 hover:border-brand-orange/50',
+    goal: 'bg-nebula-pink/10 text-nebula-pink border-nebula-pink/20 hover:border-nebula-pink/50',
   };
 
   const handleAddTag = () => {
@@ -74,288 +76,284 @@ export const OnboardingProfilePopup: React.FC<OnboardingProfilePopupProps> = ({ 
   };
 
   return (
-    <div className="fixed inset-0 z-[100] overflow-hidden bg-space-950">
-      {/* Particle Background - Independent instance */}
-      <ProfileParticleBackground />
+    <div className="fixed inset-0 z-[100] overflow-hidden bg-space-950 flex items-center justify-center">
+      {/* Particle Background */}
+      <div className="absolute inset-0 z-0">
+        <ProfileParticleBackground />
+      </div>
 
-      {/* Main Layout: Card on left/center, CTA on right */}
-      <div className="absolute inset-0 z-[2] flex items-center justify-center p-4 animate-fade-in">
-        {/* Profile Card - No scroll */}
-        <div className="glass-panel border border-white/10 rounded-3xl shadow-2xl max-w-3xl w-full p-6 md:p-8">
-          {/* Header + Avatar inline */}
-          <div className="mb-6 pb-4 border-b border-white/5">
-            <h2 className="text-2xl font-serif font-bold text-white tracking-wide">很高兴认识你！</h2>
-            <p className="text-white/40 text-xs font-light mt-1">基于对话生成的个人档案，点击可修改</p>
+      {/* Wrapper for Card and Floating Elements */}
+      <div className="relative z-10 w-full max-w-5xl h-[600px] animate-fade-in flex">
 
-            {/* Avatar + Name below header */}
-            <div className="flex items-center gap-3 mt-4">
-              <div className="relative group flex-shrink-0">
-                <div className="absolute inset-[-3px] rounded-full border border-brand-orange/30 animate-[spin_10s_linear_infinite]"></div>
-                <div className="w-12 h-12 rounded-full relative z-10 overflow-hidden border-2 border-white/20">
-                  <img
-                    src={profile.avatar}
-                    alt={editedName}
-                    className="w-full h-full object-cover"
-                  />
-                </div>
+        {/* Main Card */}
+        <div className="w-full h-full glass-panel border border-white/10 rounded-[40px] shadow-2xl flex overflow-hidden">
+
+          {/* Left Column: Identity & Tags (40%) */}
+          <div className="w-[40%] h-full p-8 md:p-10 border-r border-white/5 flex flex-col relative">
+            {/* Header Area */}
+            <div className="mb-8">
+              <h2 className="text-3xl font-serif font-bold text-brand-yellow mb-2 tracking-wide">很高兴认识你！</h2>
+              <div className="flex flex-wrap items-center gap-2 text-white/40 text-xs font-light leading-relaxed">
+                <span>{isFromAI ? '基于对话生成的个人档案，点击可修改' : '你貌似没有接听电话，可以自定义个人信息或重新接听'}</span>
+                {!isFromAI && onRetry && (
+                   <button
+                     onClick={onRetry}
+                     className="text-brand-yellow/80 hover:text-brand-yellow border-b border-brand-yellow/30 hover:border-brand-yellow transition-all pb-0.5 ml-1"
+                   >
+                     重新接听
+                   </button>
+                )}
               </div>
-              <div>
+            </div>
+
+            {/* Avatar & Name */}
+            <div className="flex items-center gap-6 mb-10">
+              <div className="relative group">
+                <div className="w-24 h-24 rounded-full border-2 border-white/20 p-1">
+                  <div className="w-full h-full rounded-full overflow-hidden bg-white/5">
+                      <img
+                          src={profile.avatar}
+                          alt="Avatar"
+                          className="w-full h-full object-cover transition-transform duration-700 group-hover:scale-110"
+                      />
+                  </div>
+                </div>
+                {/* Icon removed as per feedback */}
+              </div>
+
+              <div className="flex-1">
                 {editingField === 'name' ? (
                   <input
                     type="text"
                     value={editedName}
-                    onChange={(e) => setEditedName(e.target.value)}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedName(e.target.value)}
                     onBlur={() => setEditingField(null)}
-                    onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && setEditingField(null)}
                     autoFocus
-                    className="text-lg font-serif font-bold text-white bg-white/10 border border-white/20 rounded px-2 py-1 outline-none focus:border-brand-yellow"
+                    className="text-3xl font-serif font-bold text-white bg-transparent border-b border-white/20 outline-none w-full mb-1"
                   />
                 ) : (
-                  <h3
-                    className="text-lg font-serif font-bold text-white cursor-pointer hover:text-brand-yellow transition-colors"
+                  <h1
+                    className="text-3xl font-serif font-bold text-white cursor-pointer hover:text-brand-yellow transition-colors mb-1"
                     onClick={() => setEditingField('name')}
-                    title="点击修改昵称"
                   >
                     {editedName}
-                  </h3>
+                  </h1>
                 )}
-                <p className="text-brand-blue/70 font-mono text-[9px] uppercase tracking-widest">EXPLORER</p>
+
+                {editingField === 'avatarPrompt' ? (
+                  <input
+                    type="text"
+                    value={editedAvatarPrompt}
+                    onChange={(e: React.ChangeEvent<HTMLInputElement>) => setEditedAvatarPrompt(e.target.value)}
+                    onBlur={() => setEditingField(null)}
+                    onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && setEditingField(null)}
+                    autoFocus
+                    className="text-brand-blue/60 font-mono text-[10px] uppercase tracking-[0.3em] font-bold bg-transparent border-b border-white/20 outline-none w-full"
+                  />
+                ) : (
+                  <div
+                    className="text-brand-blue/60 font-mono text-[10px] uppercase tracking-[0.3em] font-bold cursor-pointer hover:text-brand-blue transition-colors"
+                    onClick={() => setEditingField('avatarPrompt')}
+                  >
+                    {editedAvatarPrompt}
+                  </div>
+                )}
               </div>
             </div>
-          </div>
 
-          {/* Content: Tags (Left 40%) + MY WAY Timeline (Right 60%) */}
-          <div className="flex flex-col md:flex-row gap-6">
-            {/* Left: Tags - Word Cloud Style with theme colors */}
-            <div className="md:w-[40%] space-y-3">
-              <div className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold">身份标签</div>
+            {/* Tags Section */}
+            <div
+              className="flex-1 overflow-y-auto pr-2"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+              <div className="flex items-center gap-2 mb-4">
+                 <div className="w-1.5 h-1.5 rounded-full bg-brand-yellow animate-pulse"></div>
+                 <div className="text-[10px] uppercase tracking-[0.2em] text-white/30 font-bold">my tag</div>
+              </div>
               <div className="flex flex-wrap gap-2">
                 {Object.entries(editedTags).map(([key, value]) => (
                   <div
                     key={key}
-                    className={`relative px-3 py-1.5 rounded-full border text-sm cursor-pointer transition-all duration-200 ${tagColors[key] || 'bg-white/10 text-white/70 border-white/20 hover:border-white/50'} ${hoveredTag === key ? 'ring-2 ring-white/30 scale-105' : ''}`}
-                    onMouseEnter={() => setHoveredTag(key)}
-                    onMouseLeave={() => setHoveredTag(null)}
+                    className={`relative px-3 py-2 rounded-xl border text-xs cursor-pointer transition-all duration-300 group ${tagColors[key] || 'bg-white/5 text-white/60 border-white/10 hover:border-white/30'}`}
                     onClick={() => setEditingField(`tag_${key}`)}
-                    title="点击修改"
                   >
-                    {/* Delete button - appears on hover */}
-                    {hoveredTag === key && editingField !== `tag_${key}` && (
-                      <button
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          handleDeleteTag(key);
-                        }}
-                        className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500 text-white text-[10px] flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-                        title="删除标签"
-                      >
-                        ×
-                      </button>
-                    )}
                     {editingField === `tag_${key}` ? (
-                      <input
-                        type="text"
-                        value={value}
-                        onChange={(e) => handleUpdateTag(key, e.target.value)}
-                        onBlur={() => setEditingField(null)}
-                        onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
-                        onClick={(e) => e.stopPropagation()}
-                        autoFocus
-                        className="bg-transparent border-none outline-none w-20 text-center"
-                      />
+                       <input
+                         type="text"
+                         value={value}
+                         onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUpdateTag(key, e.target.value)}
+                         onBlur={() => setEditingField(null)}
+                         onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && setEditingField(null)}
+                         onClick={(e: React.MouseEvent) => e.stopPropagation()}
+                         autoFocus
+                         className="bg-transparent border-none outline-none w-20 text-center"
+                       />
                     ) : (
-                      <>
-                        <span className="mr-1.5">{tagEmojis[key] || '🏷️'}</span>
+                      <div className="flex items-center gap-2">
+                        <span>{tagEmojis[key] || '🏷️'}</span>
                         <span>{value}</span>
-                      </>
+                      </div>
                     )}
+
+                    {/* Delete button on hover */}
+                    <button
+                      onClick={(e: React.MouseEvent) => {
+                        e.stopPropagation();
+                        handleDeleteTag(key);
+                      }}
+                      className="absolute -top-1.5 -right-1.5 w-4 h-4 rounded-full bg-red-500/80 text-white text-[10px] opacity-0 group-hover:opacity-100 flex items-center justify-center transition-all hover:scale-110"
+                    >
+                      ×
+                    </button>
                   </div>
                 ))}
-                {/* Add Tag Button */}
                 <button
                   onClick={handleAddTag}
-                  className="px-3 py-1.5 rounded-full border border-dashed border-white/20 text-white/40 text-sm hover:border-white/50 hover:text-white/70 transition-all duration-200 flex items-center gap-1"
-                  title="添加标签"
+                  className="px-3 py-2 rounded-xl border border-dashed border-white/10 text-white/20 text-xs hover:border-white/30 hover:text-white/50 transition-all flex items-center justify-center gap-1"
                 >
-                  <span>+</span>
+                  +
                 </button>
               </div>
             </div>
+          </div>
 
-            {/* Right: Timeline - MY WAY */}
-            <div className="md:w-[60%] space-y-3">
-              <div className="flex items-center justify-between">
-                <div className="text-[9px] uppercase tracking-[0.2em] text-white/30 font-bold">MY WAY</div>
-                <span className="text-[9px] font-mono text-brand-orange bg-brand-orange/10 px-2 py-0.5 rounded-full border border-brand-orange/20">
-                  {editedTimeline.length} 节点
-                </span>
-              </div>
+          {/* Right Column: Timeline (60%) */}
+          <div className="w-[60%] h-full bg-white/[0.02] p-8 md:p-10 relative">
+            <div className="flex items-center justify-between mb-8">
+               <div className="flex items-center gap-3">
+                 <div className="w-1.5 h-1.5 rounded-full bg-brand-yellow animate-pulse"></div>
+                 <span className="text-[10px] font-mono text-white/40 uppercase tracking-[0.2em]">Timeline</span>
+               </div>
+               {/* Year component removed as per feedback */}
+            </div>
 
-              <div className="ml-2">
-                <div className="relative -ml-4 pl-14 pr-4 pt-3 pb-3 space-y-3 max-h-64 overflow-y-auto scrollbar-hide" style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}>
+            <div
+              className="h-[calc(100%-40px)] overflow-y-auto pr-4 relative"
+              style={{ scrollbarWidth: 'none', msOverflowStyle: 'none' }}
+            >
+               {/* Timeline Line */}
+               <div className="absolute left-[19px] top-4 bottom-0 w-px bg-gradient-to-b from-brand-yellow/50 via-white/10 to-transparent"></div>
 
-                  {editedTimeline.map((entry, index) => (
-                    <div
+               <div className="space-y-6">
+                 {editedTimeline.map((entry, index) => (
+                   <div
                       key={entry.id}
-                      className="relative group"
+                      className="relative pl-10 group"
                       onMouseEnter={() => setHoveredTimelineId(entry.id)}
                       onMouseLeave={() => setHoveredTimelineId(null)}
-                    >
-                      {/* Vertical line segment - connects this dot to next dot */}
-                      {index < editedTimeline.length - 1 && (
-                        <div
-                          className="absolute w-0.5 bg-white/20"
-                          style={{
-                            left: 'calc(-40px + 8px - 1px)',
-                            top: 'calc(12px + 6px)',
-                            bottom: '-18px'
-                          }}
-                        ></div>
-                      )}
-                      {/* Dot */}
-                      <div className="absolute -left-10 top-3 w-4 h-4 flex items-center justify-center z-10">
-                        <div className={`w-3 h-3 rounded-full bg-space-950 border-2 transition-transform ${
-                          index === 0 ? 'border-brand-yellow shadow-[0_0_10px_rgba(253,209,64,0.5)]' :
-                          index === editedTimeline.length - 1 ? 'border-nebula-pink shadow-[0_0_10px_rgba(244,114,182,0.5)]' :
-                          'border-brand-blue shadow-[0_0_10px_rgba(56,189,248,0.5)]'
-                        } ${hoveredTimelineId === entry.id ? 'scale-150' : ''}`}></div>
+                   >
+                      {/* Dot Marker */}
+                      <div className={`absolute left-[15px] top-1.5 w-[9px] h-[9px] rounded-full border-2 transition-all duration-300 z-10 bg-space-950 ${
+                          index === 0 ? 'border-brand-yellow shadow-[0_0_8px_rgba(253,209,64,0.6)]' :
+                          hoveredTimelineId === entry.id ? 'border-brand-blue scale-125' : 'border-white/30'
+                      }`}></div>
+
+                      {/* Card Content */}
+                      <div className={`p-4 rounded-2xl border transition-all duration-300 ${
+                          hoveredTimelineId === entry.id
+                            ? 'bg-white/[0.06] border-white/20 translate-x-1'
+                            : 'bg-white/[0.02] border-white/5'
+                      }`}>
+                          {/* Hover Actions */}
+                          <div className={`absolute -right-2 -top-2 flex gap-1 transition-opacity duration-200 ${hoveredTimelineId === entry.id ? 'opacity-100' : 'opacity-0'}`}>
+                             <button onClick={() => handleAddTimelineNode(entry.id)} className="w-6 h-6 rounded-full bg-brand-blue text-space-950 flex items-center justify-center hover:scale-110 transition-transform shadow-lg z-20">+</button>
+                             <button onClick={() => handleDeleteTimelineNode(entry.id)} className="w-6 h-6 rounded-full bg-red-500 text-white flex items-center justify-center hover:scale-110 transition-transform shadow-lg z-20">×</button>
+                          </div>
+
+                          {/* Year */}
+                          <div className="mb-1">
+                            {editingField === `timeline_${entry.id}_year` ? (
+                              <input
+                                value={entry.year}
+                                onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUpdateTimeline(entry.id, 'year', e.target.value)}
+                                onBlur={() => setEditingField(null)}
+                                onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && setEditingField(null)}
+                                autoFocus
+                                className="bg-transparent text-[10px] font-mono text-white/50 w-20 outline-none"
+                              />
+                            ) : (
+                              <span
+                                className="text-[10px] font-mono text-white/50 cursor-pointer hover:text-brand-yellow transition-colors"
+                                onClick={() => setEditingField(`timeline_${entry.id}_year`)}
+                              >
+                                {entry.year}
+                              </span>
+                            )}
+                          </div>
+
+                          {/* Title */}
+                          <div className="mb-2">
+                             {editingField === `timeline_${entry.id}_title` ? (
+                               <input
+                                 value={entry.title}
+                                 onChange={(e: React.ChangeEvent<HTMLInputElement>) => handleUpdateTimeline(entry.id, 'title', e.target.value)}
+                                 onBlur={() => setEditingField(null)}
+                                 onKeyDown={(e: React.KeyboardEvent<HTMLInputElement>) => e.key === 'Enter' && setEditingField(null)}
+                                 autoFocus
+                                 className="bg-transparent text-lg font-bold text-white w-full outline-none border-b border-white/20"
+                               />
+                             ) : (
+                               <h3
+                                 className="text-lg font-bold text-white cursor-pointer hover:text-brand-yellow transition-colors"
+                                 onClick={() => setEditingField(`timeline_${entry.id}_title`)}
+                               >
+                                 {entry.title}
+                               </h3>
+                             )}
+                          </div>
+
+                          {/* Description */}
+                          <div>
+                            {editingField === `timeline_${entry.id}_description` ? (
+                               <textarea
+                                 value={entry.description}
+                                 onChange={(e: React.ChangeEvent<HTMLTextAreaElement>) => handleUpdateTimeline(entry.id, 'description', e.target.value)}
+                                 onBlur={() => setEditingField(null)}
+                                 autoFocus
+                                 className="bg-transparent text-sm text-gray-400 w-full outline-none resize-none h-16 border border-white/10 rounded p-1"
+                               />
+                             ) : (
+                               <p
+                                 className="text-sm text-gray-400 font-light leading-relaxed cursor-pointer hover:text-gray-300"
+                                 onClick={() => setEditingField(`timeline_${entry.id}_description`)}
+                               >
+                                 {entry.description}
+                               </p>
+                             )}
+                          </div>
                       </div>
-
-                    {/* Content */}
-                    <div className={`relative p-3 rounded-xl border glass-panel transition-all duration-300 ${
-                      hoveredTimelineId === entry.id
-                        ? 'bg-white/[0.04] border-white/20'
-                        : 'border-white/5'
-                    }`}>
-                      {/* Action buttons - appears on hover */}
-                      {hoveredTimelineId === entry.id && (
-                        <div className="absolute -top-2 -right-2 flex items-center gap-1 z-20">
-                          {/* Add button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleAddTimelineNode(entry.id);
-                            }}
-                            className="w-5 h-5 rounded-full bg-brand-yellow text-space-950 text-xs flex items-center justify-center hover:bg-brand-yellow/80 transition-colors shadow-lg"
-                            title="在此后添加节点"
-                          >
-                            +
-                          </button>
-                          {/* Delete button */}
-                          <button
-                            onClick={(e) => {
-                              e.stopPropagation();
-                              handleDeleteTimelineNode(entry.id);
-                            }}
-                            className="w-5 h-5 rounded-full bg-red-500 text-white text-xs flex items-center justify-center hover:bg-red-600 transition-colors shadow-lg"
-                            title="删除节点"
-                          >
-                            ×
-                          </button>
-                        </div>
-                      )}
-                      {/* Year - Editable */}
-                      <div className="flex items-center gap-2 mb-1">
-                        {editingField === `timeline_${entry.id}_year` ? (
-                          <input
-                            type="text"
-                            value={entry.year}
-                            onChange={(e) => handleUpdateTimeline(entry.id, 'year', e.target.value)}
-                            onBlur={() => setEditingField(null)}
-                            onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
-                            autoFocus
-                            className="text-[10px] font-mono text-white/50 bg-white/10 border border-white/20 rounded px-1 outline-none w-16"
-                          />
-                        ) : (
-                          <span
-                            className="text-[10px] font-mono text-white/50 cursor-pointer hover:text-white/80"
-                            onClick={() => setEditingField(`timeline_${entry.id}_year`)}
-                            title="点击修改日期"
-                          >
-                            {entry.year}
-                          </span>
-                        )}
-                      </div>
-
-                      {/* Title - Editable */}
-                      {editingField === `timeline_${entry.id}_title` ? (
-                        <input
-                          type="text"
-                          value={entry.title}
-                          onChange={(e) => handleUpdateTimeline(entry.id, 'title', e.target.value)}
-                          onBlur={() => setEditingField(null)}
-                          onKeyDown={(e) => e.key === 'Enter' && setEditingField(null)}
-                          autoFocus
-                          className="text-sm font-bold text-white bg-white/10 border border-white/20 rounded px-2 py-1 outline-none w-full mb-1 focus:border-brand-yellow"
-                        />
-                      ) : (
-                        <h3
-                          className={`text-sm font-bold mb-1 transition-colors cursor-pointer ${
-                            hoveredTimelineId === entry.id ? 'text-brand-yellow' : 'text-white'
-                          }`}
-                          onClick={() => setEditingField(`timeline_${entry.id}_title`)}
-                          title="点击修改标题"
-                        >
-                          {entry.title}
-                        </h3>
-                      )}
-
-                      {/* Description - Editable */}
-                      {editingField === `timeline_${entry.id}_description` ? (
-                        <textarea
-                          value={entry.description}
-                          onChange={(e) => handleUpdateTimeline(entry.id, 'description', e.target.value)}
-                          onBlur={() => setEditingField(null)}
-                          autoFocus
-                          className="text-xs text-gray-400 bg-white/10 border border-white/20 rounded px-2 py-1 outline-none w-full resize-none focus:border-brand-yellow"
-                          rows={2}
-                        />
-                      ) : (
-                        <p
-                          className="text-xs text-gray-400 leading-relaxed font-light cursor-pointer hover:text-gray-300"
-                          onClick={() => setEditingField(`timeline_${entry.id}_description`)}
-                          title="点击修改描述"
-                        >
-                          {entry.description}
-                        </p>
-                      )}
-                    </div>
-                  </div>
-                ))}
-                </div>
-              </div>
+                   </div>
+                 ))}
+               </div>
             </div>
           </div>
         </div>
 
-        {/* Right Side CTA Button - Outside the card, on particle background */}
-        <button
-          onClick={onContinue}
-          className="group ml-8 flex flex-col items-center gap-3 transition-all duration-300 hover:scale-110"
-        >
-          {/* Arrow - No circle by default, filled circle on hover */}
-          <div className="w-16 h-16 rounded-full flex items-center justify-center transition-all duration-300 group-hover:bg-brand-yellow group-hover:shadow-[0_0_30px_rgba(253,209,64,0.4)]">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              width="28"
-              height="28"
-              viewBox="0 0 24 24"
-              fill="none"
-              stroke="currentColor"
-              strokeWidth="2.5"
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              className="text-brand-yellow group-hover:text-space-950 transition-colors duration-300"
-            >
-              <line x1="5" y1="12" x2="19" y2="12" />
-              <polyline points="12 5 19 12 12 19" />
-            </svg>
-          </div>
-          {/* Yellow Label */}
-          <span className="text-brand-yellow text-sm font-bold tracking-wider uppercase group-hover:animate-pulse">
-            开始MY WAY
-          </span>
-        </button>
+        {/* Confirmation Floating Button - Outside the card, aligned relative to the wrapper */}
+        <div className="absolute -top-6 -right-6 z-50">
+             <button
+               onClick={onContinue}
+               className="group relative w-20 h-20 rounded-full bg-brand-yellow shadow-[0_0_40px_rgba(253,209,64,0.3)] flex items-center justify-center hover:scale-110 transition-all duration-300 hover:shadow-[0_0_60px_rgba(253,209,64,0.5)] border-4 border-space-950"
+             >
+                <svg
+                  className="w-10 h-10 text-space-950 transition-transform duration-300 group-hover:rotate-12"
+                  viewBox="0 0 24 24"
+                  fill="none"
+                  stroke="currentColor"
+                  strokeWidth="3"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                >
+                   <polyline points="20 6 9 17 4 12" />
+                </svg>
+
+                {/* Tooltip hint */}
+                <div className="absolute top-full mt-4 bg-white/10 backdrop-blur text-white text-xs px-3 py-1 rounded-full opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
+                   确认开启旅程
+                </div>
+             </button>
+        </div>
       </div>
     </div>
   );

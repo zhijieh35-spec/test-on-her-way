@@ -40,6 +40,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
   const conversationHistoryRef = useRef<string[]>([]);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const mountedRef = useRef(true);
+  const extractedProfileRef = useRef<PublicProfile | undefined>(undefined);
   const recognitionRef = useRef<any>(null);
   const synthesisRef = useRef<SpeechSynthesis>(window.speechSynthesis);
   const autoPlayTimerRef = useRef<NodeJS.Timeout | null>(null);
@@ -304,7 +305,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
   const handleClose = () => {
     synthesisRef.current.cancel();
     const reason = status === 'error' ? 'error' : status === 'idle' ? 'declined' : 'ended';
-    onClose({ transcriptionHistory: transcriptionRef.current, reason });
+    onClose({ transcriptionHistory: transcriptionRef.current, reason, profile: extractedProfileRef.current });
   };
 
   const startSession = async (useVoice: boolean) => {
@@ -378,6 +379,10 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
         });
         const response = await chatApi({ userId, messages: chatMessages });
         mentorText = response.content;
+        // Capture extracted profile if returned
+        if (response.profile) {
+          extractedProfileRef.current = response.profile;
+        }
       } else {
         // Call AI using default service
         const response = await sendMessageToMentor(message, conversationHistoryRef.current, false);
@@ -590,7 +595,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
                    {isOnboarding ? (
                      <>我们先随便聊几句，互相认识一下彼此？</>
                    ) : (
-                     <>选择语音通话或文字聊天<br/>来和你的 AI 导师聊聊吧</>
+                     <>选择语音通话或文字聊天<br/>来和你的 AI向导聊聊吧</>
                    )}
                 </p>
                 {status === 'error' && (
@@ -602,7 +607,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
             ) : (
               <>
                  <h2 className="text-2xl font-sans font-bold text-white mb-2 tracking-wide">
-                   On Her Way AI 导师
+                   On Her Way AI 向导
                  </h2>
                  <p className="text-brand-blue text-xs tracking-[0.2em] uppercase animate-pulse mb-4">
                    {status === 'listening' ? (isVoiceMode ? "听你说..." : "等待输入...") :
@@ -611,14 +616,16 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
 
                  {/* Subtitles Area - with swipe support */}
                  <div
-                   className="h-48 flex flex-col justify-center items-center w-full px-4 transition-all relative overflow-hidden select-none cursor-grab active:cursor-grabbing"
-                   onTouchStart={handleTouchStart}
-                   onTouchEnd={handleTouchEnd}
-                   onWheel={handleWheel}
+                   className="flex flex-col items-center w-full px-4 transition-all select-none"
                  >
 
-                    {/* Mentor Text (Dynamic Sentences) - Scale animation only */}
-                    <div className="text-center w-full max-w-sm h-32 flex items-center justify-center relative overflow-hidden">
+                    {/* Mentor Text (Dynamic Sentences) - Fixed size box */}
+                    <div
+                      className="text-center w-full max-w-sm h-32 flex items-center justify-center relative overflow-hidden cursor-grab active:cursor-grabbing"
+                      onTouchStart={handleTouchStart}
+                      onTouchEnd={handleTouchEnd}
+                      onWheel={handleWheel}
+                    >
                       {mentorSentences.length > 0 ? (
                         mentorSentences.map((sentence, idx) => {
                           const isCurrent = idx === currentSentenceIndex;
@@ -649,7 +656,7 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
 
                     {/* Scroll indicator */}
                     {mentorSentences.length > 1 && (
-                      <div className="flex flex-col items-center gap-1 opacity-40 mt-4">
+                      <div className="flex flex-col items-center gap-1 opacity-40 mt-2">
                         <div className="flex gap-1">
                           {mentorSentences.map((_, idx) => (
                             <div
@@ -666,14 +673,16 @@ export const VoiceCallModal: React.FC<VoiceCallModalProps> = ({ onClose, mode = 
                       </div>
                     )}
 
-                    {/* User Text (Below Mentor, Gray) */}
-                    {currentUserText && (
-                      <div className="w-full max-w-md border-t border-white/10 pt-4 animate-fade-in mt-4">
-                        <p className="text-gray-400 text-base font-light text-center italic">
-                          "{currentUserText}"
-                        </p>
-                      </div>
-                    )}
+                    {/* User Text - Fixed position and height */}
+                    <div className="w-full max-w-md mt-6 h-[60px] flex items-start justify-center">
+                      {currentUserText && (
+                        <div className="border-t border-white/10 pt-4 animate-fade-in w-auto max-w-full">
+                          <p className="text-gray-400 text-base font-light text-center italic truncate">
+                            "{currentUserText}"
+                          </p>
+                        </div>
+                      )}
+                    </div>
                  </div>
               </>
             )}

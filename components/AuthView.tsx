@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { User, RegisterRequest, RegisterResponse, LoginRequest, LoginResponse } from '../types';
+import { getAvatarForUser } from '../onHerWay/utils/avatars';
 
 type AuthMode = 'login' | 'register';
 
@@ -18,8 +19,8 @@ export const AuthView: React.FC<AuthViewProps> = ({ onAuth, onRegisterApi, onLog
   const [isLoading, setIsLoading] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
 
-  // Fixed avatar placeholder
-  const fixedAvatar = 'https://i.pravatar.cc/150?u=default';
+  // Fixed avatar placeholder - will be replaced with user-specific avatar after registration
+  const fixedAvatar = getAvatarForUser('default_auth');
 
   const generateUserId = (): string => {
     const timestamp = Date.now();
